@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: hr-platform
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: anyclaw
+    password: 3005
