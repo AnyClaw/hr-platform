@@ -5,3 +5,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: anyclaw
     password: 3005
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
