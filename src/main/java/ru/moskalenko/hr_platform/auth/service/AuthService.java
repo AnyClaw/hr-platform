@@ -3,6 +3,7 @@ package ru.moskalenko.hr_platform.auth.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import ru.moskalenko.hr_platform.auth.dto.request.LoginRequest;
 import ru.moskalenko.hr_platform.auth.dto.response.LoginResponse;
 import ru.moskalenko.hr_platform.auth.JwtProperties;
+import ru.moskalenko.hr_platform.shared.dto.UserSummary;
+import ru.moskalenko.hr_platform.shared.exception.InvalidCredentialsException;
+import ru.moskalenko.hr_platform.user.entity.User;
 
 @Service
 @RequiredArgsConstructor
@@ -27,21 +31,35 @@ public class AuthService {
                 loginRequest.email(), loginRequest.password()
         );
 
-        // AuthenticationManager вызовет:
-        //   - CustomUserDetailsService.loadUserByUsername()
-        //   - PasswordEncoder.matches() для проверки пароля
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        try {
+            // AuthenticationManager вызовет:
+            //   - CustomUserDetailsService.loadUserByUsername()
+            //   - PasswordEncoder.matches() для проверки пароля
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Long expiresInSeconds = jwtProperties.getExpiration() / 1000;
+            User user = (User) authentication.getPrincipal();
+            UserSummary userSummary = new UserSummary(
+                    user.getId(),
+                    user.getRole(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getMiddleName(),
+                    user.getEmail()
+            );
 
-        String accessToken = jwtUtils.generateAccessTokenFromAuthentication(authentication, expiresInSeconds);
-        String refreshToken = jwtUtils.generateRefreshToken(authentication.getName());
+            Long expiresInSeconds = jwtProperties.getExpiration() / 1000;
 
-        log.info("Пользователь {} успешно аутентифицирован. Access токен истечёт через {} секунд",
-                loginRequest.email(), expiresInSeconds);
+            String accessToken = jwtUtils.generateAccessTokenFromAuthentication(authentication, expiresInSeconds);
+            String refreshToken = jwtUtils.generateRefreshToken(authentication.getName());
 
-        return new LoginResponse(accessToken, refreshToken, expiresInSeconds);
+            log.info("Пользователь {} успешно аутентифицирован. Access токен истечёт через {} секунд",
+                    loginRequest.email(), expiresInSeconds);
+
+            return new LoginResponse(accessToken, refreshToken, expiresInSeconds, userSummary);
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Неверный email или пароль");
+        }
     }
 }
