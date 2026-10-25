@@ -16,7 +16,9 @@
 - Response `200` - Успешная авторизация:
 ```json
 {
-  "token": "String",
+  "accessToken": "String",
+  "refreshToken": "String",
+  "expiresIn": "Integer",
   "user": {
     "id": "Integer",
     "role": "String (STUDENT | MANAGER)",

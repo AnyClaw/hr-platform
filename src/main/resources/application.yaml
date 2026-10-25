@@ -11,3 +11,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+jwt:
+  secret: 9GDUrUYCL5BwBxPB2FUxp0k0UU9sjc3O3Wlf2LQOP1yB9iSOiRY3N21JLTjfi252faCCOa6hi0N4vAjHqJVd1w==
+  expiration: 900000               # 15 минут
+  refresh-expiration: 604800000    # 7 дней

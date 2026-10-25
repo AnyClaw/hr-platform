@@ -1,8 +1,8 @@
 INSERT INTO users (first_name, last_name, middle_name, birthdate, phone, email, password, role) VALUES
-('Иван', 'Петров', 'Сергеевич', '2003-05-15', '+79001234567', 'ivan.petrov@example.com', '$2a$10$hashed_password_1', 'STUDENT'),
-('Мария', 'Сидорова', 'Александровна', '2004-08-22', '+79001234568', 'maria.sidorova@example.com', '$2a$10$hashed_password_2', 'STUDENT'),
-('Алексей', 'Козлов', 'Дмитриевич', '1985-03-10', '+79001234569', 'alexey.kozlov@example.com', '$2a$10$hashed_password_3', 'MANAGER'),
-('Елена', 'Новикова', 'Игоревна', '1990-11-25', '+79001234570', 'elena.novikova@example.com', '$2a$10$hashed_password_4', 'MANAGER');
+('Иван', 'Петров', 'Сергеевич', '2003-05-15', '+79001234567', 'ivan.petrov@example.com', '$2a$10$R3hdBOU3A6deKOLFvDB7NeU3.w4hLEI9yExBwy3ZfNHGJaX84FOLK', 'STUDENT'),
+('Мария', 'Сидорова', 'Александровна', '2004-08-22', '+79001234568', 'maria.sidorova@example.com', '$2a$10$R3hdBOU3A6deKOLFvDB7NeU3.w4hLEI9yExBwy3ZfNHGJaX84FOLK', 'STUDENT'),
+('Алексей', 'Козлов', 'Дмитриевич', '1985-03-10', '+79001234569', 'alexey.kozlov@example.com', '$2a$10$R3hdBOU3A6deKOLFvDB7NeU3.w4hLEI9yExBwy3ZfNHGJaX84FOLK', 'MANAGER'),
+('Елена', 'Новикова', 'Игоревна', '1990-11-25', '+79001234570', 'elena.novikova@example.com', '$2a$10$R3hdBOU3A6deKOLFvDB7NeU3.w4hLEI9yExBwy3ZfNHGJaX84FOLK', 'MANAGER');
 
 INSERT INTO student_profiles (user_id, institute, group_name, course) VALUES
 (1, 'Институт информационных технологий', 'ИТ-21', 3),
