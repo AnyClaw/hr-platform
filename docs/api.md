@@ -16,9 +16,11 @@
 - Response `200` - Успешная авторизация:
 ```json
 {
-  "accessToken": "String",
-  "refreshToken": "String",
-  "expiresIn": "Integer",
+  "tokens": {
+    "accessToken": "String",
+    "refreshToken": "String",
+    "expiresIn": "Integer"
+  },
   "user": {
     "id": "Integer",
     "role": "String (STUDENT | MANAGER)",
@@ -30,6 +32,31 @@
 }
 ```
 - Response `401` - Ошибка авторизации
+- Response `400` - Ошибка валидации
+
+---
+
+### POST `/api/auth/refresh`
+
+Обновление access токена
+
+- Request:
+```json
+{
+  "refreshToken": "String"
+}
+```
+- Response `200` - Access токен обновлен
+```json
+{
+  "tokens": {
+    "accessToken": "String",
+    "refreshToken": "String",
+    "expiresIn": "Integer"
+  }
+}
+```
+- Response `401` - Refresh токен истек
 - Response `400` - Ошибка валидации
 
 ---

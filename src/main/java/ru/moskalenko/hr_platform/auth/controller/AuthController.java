@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.moskalenko.hr_platform.auth.dto.request.LoginRequest;
+import ru.moskalenko.hr_platform.auth.dto.request.RefreshRequest;
 import ru.moskalenko.hr_platform.auth.dto.response.LoginResponse;
+import ru.moskalenko.hr_platform.auth.dto.response.RefreshResponse;
 import ru.moskalenko.hr_platform.auth.service.AuthService;
 import ru.moskalenko.hr_platform.web.annotation.ApiBadRequestResponse;
 import ru.moskalenko.hr_platform.web.annotation.ApiUnauthorizedResponse;
@@ -39,6 +41,20 @@ public class AuthController {
     ) {
         log.info("{}", request);
         return authService.authenticateUser(request);
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "Обновление access токена")
+    @ApiResponse(
+        responseCode = "200", description = "Токены успешно обновлены",
+        content = @Content(schema = @Schema(implementation = RefreshResponse.class))
+    )
+    @ApiBadRequestResponse
+    @ApiUnauthorizedResponse
+    public RefreshResponse refreshToken(
+            @Valid @RequestBody RefreshRequest request
+    ) {
+        return authService.refreshAccessToken(request);
     }
 
     @GetMapping("/password/generate")

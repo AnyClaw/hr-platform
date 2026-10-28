@@ -22,8 +22,8 @@ import java.lang.annotation.*;
                   "timestamp": "2026-10-25T20:16:57.793Z",
                   "status": 401,
                   "error": "Unauthorized",
-                  "message": "Неверный email или пароль",
-                  "path": "/api/auth/login"
+                  "message": "string",
+                  "path": "string"
                 }
             """
                 )
