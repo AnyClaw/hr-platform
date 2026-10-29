@@ -9,7 +9,7 @@
 - PostgreSQL 18.3
 - Flyway 12.4.0
 - Swagger (Open API) 3.1.0
-- Docker
+- Docker / Docker Compose
 - JUnit 6.0.3
 - Mockito 5.23.0
 
@@ -18,19 +18,35 @@
 ### Требования
 
 - Java 21+
-- Docker
+- Docker и Docker Compose
 - Среда разработки (Intellij IDEA, VS Code и др.)
 - Git
 - Postman (рекомендуется для запросов и ручного тестирования)
 - DBeaver (рекомендуется для работы с бд)
 
-### Запуск Docker контейнера с БД
+### Пошаговая инструкция
 
-Перед запуском приложения необходимо поднять Docker контейнер с PostgreSQL. Для этого в Docker Desktop необходимо открыть командную строку и вставить команду:
-```
-docker run --name hr-platform -p 5432:5432 -e POSTGRES_USER={{USERNAME}} -e POSTGRES_PASSWORD={{PASSWORD}} -d postgres
-```
-В поля USERNAME и PASSWORD необходимо вставить свои значения. Далее в файле `src/main/resources/application.yaml` необходимо подставить ранее введенные значение USERNAME и PASSWORD
+1. **Клонировать репозиторий**
+    ```bash
+    git clone <ссылка_на_репозиторий>
+    cd hr-platform
+    ```
+2. **Настроить переменные окружения**
+
+    В корне проекта лежит файл `.env.example`. Необходимо скопировать его в .env и заменить
+    значение переменных на свои
+3. **Запустить базу данных**
+    
+    Необходимо убедиться, что Docker Desktop запущен, после чего выполнить в терминале 
+    из корня проекта команду:
+    ```bash
+    docker compose up -d --wait postgres
+    ```
+4. **Запустить приложение**
+
+   Открыть проект в IDE и запустить класс HrPlatformApplication (или использовать
+   ./mvnw spring-boot:run). Flyway автоматически накатит все миграции и создаст таблицы 
+   при первом запуске.
 
 ## Документация
 
