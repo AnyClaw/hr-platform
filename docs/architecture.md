@@ -1,3 +1,6 @@
+# Архитектура папок проекта
+
+## Исходный код
 ```
 ru.moskalenko.hr_platform/
 │
@@ -44,4 +47,52 @@ ru.moskalenko.hr_platform/
      ├── entity/
      ├── dto/
      └── mapper/
+```
+
+## Тесты
+```
+hr-platform/ (корень проекта)
+├── src/
+│   ├── main/
+│   │   └── java/ru/moskalenko/hr_platform/
+│   │       ├── auth/
+│   │       │   ├── AuthController.java
+│   │       │   ├── service/AuthService.java
+│   │       │   └── service/JwtUtils.java
+│   │       └── user/
+│   │           ├── UserController.java
+│   │           ├── service/UserService.java
+│   │           └── repository/UserRepository.java
+│   │
+│   └── test/  <-- ВСЕ ТЕСТЫ ЗДЕСЬ
+│       ├── java/ru/moskalenko/hr_platform/
+│       │   │
+│       │   ├── auth/
+│       │   │   ├── AuthIntegrationTest.java       <-- ИНТЕГРАЦИОННЫЙ тест контроллера (MockMvc)
+│       │   │   │                                      (проверяем логин, регистрацию, ошибки 400/401)
+│       │   │   │
+│       │   │   └── service/
+│       │   │       ├── AuthServiceTest.java       <-- UNIT-тест сервиса (Mockito)
+│       │   │       │                                      (проверяем логику авторизации, выброс исключений)
+│       │   │       └── JwtUtilsTest.java          <-- UNIT-тест утилиты (JUnit)
+│       │   │                                              (проверяем генерацию/парсинг токенов)
+│       │   │
+│       │   ├── user/
+│       │   │   ├── UserIntegrationTest.java       <-- ИНТЕГРАЦИОННЫЙ тест (если нужен)
+│       │   │   ├── service/
+│       │   │   │   └── UserServiceTest.java       <-- UNIT-тест сервиса (Mockito)
+│       │   │   └── repository/
+│       │   │       └── UserRepositoryTest.java    <-- ТЕСТ РЕПОЗИТОРИЯ (@DataJpaTest)
+│       │   │                                              (проверяем, что findByEmail реально работает в БД)
+│       │   │
+│       │   └── config/
+│       │       └── TestSecurityConfig.java        <-- (Опционально) Общие настройки для тестов
+│       │
+│       └── resources/
+│           ├── application-test.yml               <-- Конфиг для тестов (H2 in-memory DB, отключение ненужного)
+│           └── data.sql                           <-- (Опционально) SQL-скрипт для тестовых данных
+│
+└── docs/
+    ├── TESTING_GUIDE.md                           <-- Твой гайд по тестированию
+    └── TEST_CASES.md                              <-- Таблица с тест-кейсами (как я показывал выше)
 ```

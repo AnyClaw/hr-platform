@@ -68,18 +68,12 @@ public class JwtUtils {
         return extractAllClaims(token).getSubject();
     }
 
-    // распаковка из токена
-    // TODO: рассмотреть удаление метода
-    public String getRoleFromToken(String token) {
-        return extractAllClaims(token).get("role", String.class);
-    }
-
     public Date extractExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    private boolean isTokenNotExpired(String token) {
+        return !extractExpiration(token).before(new Date());
     }
 
     private Claims extractAllClaims(String token) {
@@ -92,11 +86,10 @@ public class JwtUtils {
 
     // полная валидация с пользователем
     // используется в фильтре при каждом запросе
-    // TODO: рассмотреть возможность ограничится базовой валидацией
     public boolean validateAccessToken(String token, UserDetails userDetails) {
         try {
             String username = extractUsername(token);
-            boolean isValid = username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+            boolean isValid = username.equals(userDetails.getUsername()) && isTokenNotExpired(token);
 
             if (!isValid) {
                 log.warn("Токен невалиден для пользователя: {}", username);
@@ -114,8 +107,12 @@ public class JwtUtils {
     // базовая валидация без пользователя
     public boolean isTokenValid(String token) {
         try {
-            return !isTokenExpired(token);
-        } catch (Exception e) {
+            return isTokenNotExpired(token);
+        } catch (ExpiredJwtException e) {
+            log.warn("Токен истек: {}", e.getMessage());
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Неверная подпись или формат токена: {}", e.getMessage());
             return false;
         }
     }
