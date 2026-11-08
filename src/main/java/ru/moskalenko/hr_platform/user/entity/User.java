@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.moskalenko.hr_platform.shared.enums.UserRole;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String middleName;
+    private LocalDate birthdate;
     private String password;
     private String phone;
 
