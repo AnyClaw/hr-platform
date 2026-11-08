@@ -7,10 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.moskalenko.hr_platform.shared.dto.ErrorResponse;
 import ru.moskalenko.hr_platform.shared.exception.InvalidCredentialsException;
 import ru.moskalenko.hr_platform.shared.exception.InvalidTokenException;
@@ -23,6 +26,24 @@ import java.util.Map;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    // Обработка 404 ошибки (Эндпоинт не найден)
+    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            Exception ex, HttpServletRequest request
+    ) {
+        log.warn("Попытка обращения к несуществующему пути: {}", request.getRequestURI());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message("Запрашиваемый ресурс не найден")
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 
     // Обработка ошибок валидации (400 Bad Request)
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.moskalenko.hr_platform.shared.enums.UserRole;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,12 +30,16 @@ public class User implements UserDetails {
     private String middleName;
     private String password;
     private String phone;
+    private LocalDate birthdate;
 
     @Column(unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private StudentProfile studentProfile;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

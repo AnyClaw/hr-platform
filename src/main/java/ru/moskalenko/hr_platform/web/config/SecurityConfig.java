@@ -20,6 +20,8 @@ import ru.moskalenko.hr_platform.web.filter.JwtAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.moskalenko.hr_platform.web.security.RestAccessDeniedHandler;
+import ru.moskalenko.hr_platform.web.security.RestAuthenticationEntryPoint;
 
 import java.util.List;
 
@@ -32,6 +34,9 @@ public class SecurityConfig {
     private final AuthUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final RestAuthenticationEntryPoint authenticationEntryPoint;
+    private final RestAccessDeniedHandler accessDeniedHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         return http
@@ -42,9 +47,20 @@ public class SecurityConfig {
                 )
                 .anonymous(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/error"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .build();
     }
 

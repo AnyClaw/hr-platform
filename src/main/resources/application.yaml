@@ -14,6 +14,11 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
 
 jwt:
   secret: ${JWT_SECRET:9GDUrUYCL5BwBxPB2FUxp0k0UU9sjc3O3Wlf2LQOP1yB9iSOiRY3N21JLTjfi252faCCOa6hi0N4vAjHqJVd1w==}

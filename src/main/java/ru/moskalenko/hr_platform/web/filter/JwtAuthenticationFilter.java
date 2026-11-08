@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -40,22 +41,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (username != null && securityContext.getAuthentication() == null) {
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                try {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-                if (jwtUtils.validateAccessToken(jwt, userDetails)) {
+                    if (jwtUtils.validateAccessToken(jwt, userDetails)) {
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities()
-                            );
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        userDetails, null, userDetails.getAuthorities()
+                                );
 
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                        authentication.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request)
+                        );
 
-                    securityContext.setAuthentication(authentication);
+                        securityContext.setAuthentication(authentication);
 
-                    log.debug("Успешная аутентификация пользователя {}", username);
+                        log.debug("Успешная аутентификация пользователя {}", username);
+                    }
+                } catch (UsernameNotFoundException e) {
+                    log.warn("Токен валиден, но пользователь не найден в БД: {}", e.getMessage());
                 }
             }
         }
