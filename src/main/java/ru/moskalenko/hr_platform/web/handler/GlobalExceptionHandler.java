@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import ru.moskalenko.hr_platform.shared.dto.ErrorResponse;
@@ -19,8 +20,10 @@ import ru.moskalenko.hr_platform.shared.exception.InvalidCredentialsException;
 import ru.moskalenko.hr_platform.shared.exception.InvalidTokenException;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Hidden
 @RestControllerAdvice
@@ -80,7 +83,6 @@ public class GlobalExceptionHandler {
 
         String errorMessage = "Неверный формат JSON запроса";
 
-        // Вытаскиваем понятное сообщение, если проблема в неизвестном поле
         if (ex.getCause() instanceof UnrecognizedPropertyException unrecognizedException) {
             errorMessage = String.format("Неизвестное поле в JSON: '%s'",
                     unrecognizedException.getPropertyName());
@@ -130,5 +132,38 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Обработка ошибок некорректных параметров запроса
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+
+        String paramName = ex.getName();
+        String receivedValue = String.valueOf(ex.getValue());
+        String errorDetail = String.format("Неверное значение '%s'", receivedValue);
+
+        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+            String allowedValues = Arrays.stream(ex.getRequiredType().getEnumConstants())
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", "));
+            errorDetail += String.format(". Допустимые значения: [%s]", allowedValues);
+        }
+
+        Map<String, String> details = new HashMap<>();
+        details.put(paramName, errorDetail);
+
+        log.warn("Ошибка типа параметра на пути {}: {}", request.getRequestURI(), details);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Ошибка валидации параметров запроса")
+                .details(details)
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,4 +1,4 @@
-package ru.moskalenko.hr_platform.auth.controller;
+package ru.moskalenko.hr_platform.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -225,10 +225,12 @@
       "isAvailableForCurrentUser": "Boolean"
     }
   ],
-  "totalElements": "Integer",
-  "totalPages": "Integer",
-  "currentPage": "Integer",
-  "pageSize": "Integer"
+  "page": {
+    "size": "Integer",
+    "number": "Integer",
+    "totalElements": "Integer",
+    "totalPages": "Integer"
+  }
 }
 ```
 - Response `401` - Не авторизован, возвращается если указан параметр `availableForMe`
@@ -315,8 +317,13 @@
 
 Получение всех бронирований текущего пользователя
 
+- Headers:
+    - `Authorization`: `Bearer <JWT_TOKEN>` (Обязательно)
+
 - Query params:
   - `status`: String - фильтр по статусу
+  - `from`: ISO 8601 Timestamp - начало периода (например, 2026-11-01T00:00:00Z)
+  - `to`: ISO 8601 Timestamp - конец периода (например, 2026-11-01T00:00:00Z)
   - `upcoming`: Boolean - только предстоящие смены
   - `page`: Integer
   - `size`: Integer
@@ -340,14 +347,61 @@
       "canComplete": "Boolean"
     }
   ],
-  "totalElements": "Integer",
-  "totalPages": "Integer",
-  "currentPage": "Integer"
+  "page": {
+    "size": "Integer",
+    "number": "Integer",
+    "totalElements": "Integer",
+    "totalPages": "Integer"
+  }
 }
 ```
 - Response `401` - Не авторизован
 
 ---
+
+### GET `/api/users/me/shifts`
+
+Получение списка смен, созданных текущим авторизованным пользователем (доступно только пользователям с ролью MANAGER).
+
+- Headers:
+    - `Authorization`: `Bearer <JWT_TOKEN>` (Обязательно)
+
+- Query params:
+    - `status`: String - фильтр по статусу
+    - `from`: ISO 8601 Timestamp - начало периода (например, 2026-11-01T00:00:00Z)
+    - `to`: ISO 8601 Timestamp - конец периода (например, 2026-11-01T00:00:00Z)
+    - `upcoming`: Boolean - только предстоящие смены
+    - `page`: Integer
+    - `size`: Integer
+
+- Response `200` - Смены получены
+```json
+{
+  "content": [
+    {
+      "id": "Integer",
+      "title": "String",
+      "description": "String | Null",
+      "startDatetime": "ISO 8601 Timestamp",
+      "endDatetime": "ISO 8601 Timestamp",
+      "status": "String",
+      "requiredPeople": "Integer",
+      "bookedCount": "Integer",
+      "availableSlots": "Integer",
+      "createdAt": "ISO 8601 Timestamp"
+    }
+  ],
+  "page": {
+    "size": "Integer",
+    "number": "Integer",
+    "totalElements": "Integer",
+    "totalPages": "Integer"
+  }
+}
+```
+- Response `400` - Ошибка валидации
+- Response `401` - Не авторизован
+- Response `403` - Роль пользователя не MANAGER
 
 ## Общие коды ошибок
 
