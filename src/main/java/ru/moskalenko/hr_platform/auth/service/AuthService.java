@@ -34,9 +34,7 @@ public class AuthService {
     public LoginResponse authenticateUser(LoginRequest loginRequest) {
         log.debug("Попытка аутентификации пользователя: {}", loginRequest.email());
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginRequest.email(), loginRequest.password()
-        );
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
 
         try {
             // AuthenticationManager вызовет:
@@ -61,8 +59,7 @@ public class AuthService {
             String accessToken = jwtUtils.generateAccessTokenFromAuthentication(authentication, expiresInSeconds);
             String refreshToken = jwtUtils.generateRefreshToken(authentication.getName());
 
-            log.info("Пользователь {} успешно аутентифицирован. Access токен истечёт через {} секунд",
-                    loginRequest.email(), expiresInSeconds);
+            log.info("Пользователь {} успешно аутентифицирован. Access токен истечёт через {} секунд", loginRequest.email(), expiresInSeconds);
 
             TokenPair tokens = new TokenPair(accessToken, refreshToken, expiresInSeconds);
             return new LoginResponse(tokens, userSummary);

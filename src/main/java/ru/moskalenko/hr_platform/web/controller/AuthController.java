@@ -36,9 +36,7 @@ public class AuthController {
     )
     @ApiBadRequestResponse
     @ApiUnauthorizedResponse
-    public LoginResponse authenticateUser(
-            @Valid @RequestBody LoginRequest request
-    ) {
+    public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest request) {
         log.info("{}", request);
         return authService.authenticateUser(request);
     }
